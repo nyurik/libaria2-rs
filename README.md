@@ -43,4 +43,20 @@ like a normal test.
 For example:
 ```bash
 NO_HARNESS=1 cargo test --test ffi session_create
-``` 
+```
+
+## Building
+Building `libaria2-sys` requires installation of the `libaria2-0-dev` package. Alternatively, a statically-built version of the `libaria2` and related libs can be built using Docker (see [pull request](https://github.com/aria2/aria2/pull/1867)). For example, to build for Windows x64 using mingw from Linux:
+
+```bash
+export GITHUB_REPO='nyurik/aria2'
+export GIT_TAG='win'
+curl https://raw.githubusercontent.com/${GITHUB_REPO}/${GIT_TAG}/Dockerfile.mingw \
+  | docker build -t aria2-mingw --build-arg GITHUB_REPO --build-arg GIT_TAG --build-arg LIBARIA2=enable --build-arg HOST=x86_64-w64-mingw32 -
+
+# Copy results to the ./native
+cd ...path_to_libaria2-rs_clone...
+docker run --rm -v $PWD/native:/output aria2-mingw
+export LIBARIA2_DIR=native/
+cargo build --target=x86_64-pc-windows-gnu --example add-uri
+```
